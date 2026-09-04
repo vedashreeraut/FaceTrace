@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FaceTrace — Blockchain Verification</title>
+
+
+    <!-- Freighter browser API -->
+    <script src="https://unpkg.com/@stellar/freighter-api/build/index.min.js"></script>
+
+
+    <!-- Stellar SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/13.3.0/stellar-sdk.min.js"></script>
+
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 850px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+
+        .card {
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            word-break: break-word;
+        }
+
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+
+        .hash {
+            font-family: monospace;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+
+        button,
+        .button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #111;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+
+        a {
+            color: #111;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<h1>🔐 FaceTrace Blockchain Verification</h1>
+
+<div class="subtitle">
+    Stellar Testnet • Freighter Wallet
+</div>
+
+
+<!-- =========================================================
+     SELECTED POST
+     ========================================================= -->
+
+<div id="post"
+     class="card">
+
+    Loading selected social-media post...
+
+</div>
+
+
+<!-- =========================================================
+     WALLET
+     ========================================================= -->
+
+<div id="wallet"
+     class="card">
+
+    Checking Freighter...
+
+</div>
+
+
+<!-- =========================================================
+     BLOCKCHAIN
+     ========================================================= -->
+
+<div id="blockchain"
+     class="card">
+
+    Blockchain verification has not started.
+
+</div>
+
+
+<script>
+
+
+// ============================================================
+// STELLAR CONFIGURATION
+// ============================================================
+
+const HORIZON_URL =
+    "https://horizon-testnet.stellar.org";
+
+
+const NETWORK_PASSPHRASE =
+    StellarSdk.Networks.TESTNET;
+
+
+const server =
+    new StellarSdk.Horizon.Server(
+        HORIZON_URL
+    );
+
+
+// ============================================================
+// STATE
+// ============================================================
+
+let publicKey = null;
+
+let transactionHash = null;
+
+let originalFingerprint = null;
+
+
+// ============================================================
+// READ DATA SENT FROM STREAMLIT
+// ============================================================
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const selectedUrl =
+    params.get("url");
+
+
+const suppliedHash =
+    params.get("hash");
+
+
+const platform =
+    params.get("platform") ||
+    "Social Media";
+
+
+const title =
+    params.get("title") ||
+    "Untitled";
+
+
+originalFingerprint =
+    suppliedHash;
+
+
+// ============================================================
+// DISPLAY SELECTED POST
+// ============================================================
+
+const postBox =
+    document.getElementById("post");
+
+
+if (!selectedUrl || !suppliedHash) {
+
+    postBox.innerHTML =
+
+        "<span class='error'>" +
+        "No social-media result was supplied." +
+        "</span>";
+
+} else {
+
+    postBox.innerHTML =
+
+        "<b>Selected Social Media Post</b>" +
+
+        "<br><br>" +
+
+        "<b>Platform:</b> " +
+        platform +
+
+        "<br><br>" +
+
+        "<b>Title:</b> " +
+        title +
+
+        "<br><br>" +
+
+        "<b>URL:</b><br>" +
+        selectedUrl +
+
+        "<br><br>" +
+
+        "<b>SHA-256 Fingerprint:</b><br>" +
+
+        "<span class='hash'>" +
+        suppliedHash +
+        "</span>";
+}
+
+
+// ============================================================
+// INITIAL FREIGHTER CHECK
+// ============================================================
+
+async function initializeWallet() {
+
+    const walletBox =
+        document.getElementById("wallet");
+
+
+    try {
+
+        if (!window.freighterApi) {
+
+            throw new Error(
+                "Freighter extension was not detected."
+            );
+        }
+
+
+        // Current Freighter connection state
+        const connected =
+            await window.freighterApi.isConnected();
+
+
+        if (!connected) {
+
+            showConnectButton();
+
+            return;
+        }
+
+
+        // Already authorized → get wallet address
+        const address =
+            await window.freighterApi.getAddress();
+
+
+        if (
+            !address ||
+            !address.address
+        ) {
+
+            showConnectButton();
+
+            return;
+        }
+
+
+        publicKey =
+            address.address;
+
+
+        showConnected();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showConnectButton();
+    }
+}
+
+
+// ============================================================
+// SHOW CONNECT BUTTON
+// ============================================================
+
+function showConnectButton() {
+
+    const walletBox =
+        document.getElementById("wallet");
+
+
+    walletBox.innerHTML =
+
+        "Freighter authorization is required." +
+
+        "<br><br>" +
+
+        "<button id='connectBtn'>" +
+        "Connect Freighter" +
+        "</button>";
+
+
+    document
+        .getElementById("connectBtn")
+        .addEventListener(
+            "click",
+            connectFreighter
+        );
+}
+
+
+// ============================================================
+// CONNECT FREIGHTER
+// ============================================================
+
+async function connectFreighter() {
+
+    const walletBox =
+        document.getElementById("wallet");
+
+
+    try {
+
+        walletBox.innerHTML =
+            "Waiting for Freighter authorization...";
+
+
+        const permission =
+            await window.freighterApi.setAllowed();
+
+
+        if (
+            permission === false
+        ) {
+
+            throw new Error(
+                "Freighter authorization was not granted."
+            );
+        }
+
+
+        const address =
+            await window.freighterApi.getAddress();
+
+
+        if (
+            !address ||
+            !address.address
+        ) {
+
+            throw new Error(
+                "Freighter did not return a wallet address."
+            );
+        }
+
+
+        publicKey =
+            address.address;
+
+
+        showConnected();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        walletBox.innerHTML =
+
+            "<span class='error'>" +
+            "✗ Freighter authorization failed" +
+            "</span>" +
+
+            "<br><br>" +
+
+            error.message +
+
+            "<br><br>" +
+
+            "<button id='retryBtn'>" +
+            "Try Again" +
+            "</button>";
+
+
+        document
+            .getElementById("retryBtn")
+            .addEventListener(
+                "click",
+                showConnectButton
+            );
+    }
+}
+
+
+// ============================================================
+// SHOW CONNECTED STATE
+// ============================================================
+
+function showConnected() {
+
+    const walletBox =
+        document.getElementById("wallet");
+
+
+    walletBox.innerHTML =
+
+        "<span class='success'>" +
+        "✓ Freighter connected" +
+        "</span>" +
+
+        "<br><br>" +
+
+        "<b>Wallet:</b><br>" +
+        publicKey +
+
+        "<br><br>" +
+
+        "<button id='recordBtn'>" +
+        "Record on Stellar" +
+        "</button>";
+
+
+    document
+        .getElementById("recordBtn")
+        .addEventListener(
+            "click",
+            createBlockchainRecord
+        );
+}
+
+
+// ============================================================
+// CREATE BLOCKCHAIN RECORD
+// ============================================================
+
+async function createBlockchainRecord() {
+
+    const blockchainBox =
+        document.getElementById(
+            "blockchain"
+        );
+
+
+    try {
+
+        if (
+            !selectedUrl ||
+            !originalFingerprint
+        ) {
+
+            throw new Error(
+                "No search result data is available."
+            );
+        }
+
+
+        blockchainBox.innerHTML =
+
+            "Building Stellar transaction...";
+
+
+        // ----------------------------------------------------
+        // Load account
+        // ----------------------------------------------------
+
+        const account =
+            await server.loadAccount(
+                publicKey
+            );
+
+
+        // ----------------------------------------------------
+        // Build transaction
+        // ----------------------------------------------------
+
+        const transaction =
+            new StellarSdk.TransactionBuilder(
+                account,
+                {
+                    fee:
+                        StellarSdk.BASE_FEE,
+
+                    networkPassphrase:
+                        NETWORK_PASSPHRASE
+                }
+            )
+
+            .addMemo(
+                StellarSdk.Memo.hash(
+                    originalFingerprint
+                )
+            )
+
+            /*
+             * Tiny self-payment.
+             * This gives the transaction a normal operation.
+             */
+            .addOperation(
+                StellarSdk.Operation.payment({
+                    destination:
+                        publicKey,
+
+                    asset:
+                        StellarSdk.Asset.native(),
+
+                    amount:
+                        "0.0000001"
+                })
+            )
+
+            .setTimeout(30)
+
+            .build();
+
+
+        blockchainBox.innerHTML =
+
+            "Transaction prepared." +
+
+            "<br><br>" +
+
+            "<b>Waiting for Freighter approval...</b>";
+
+
+        // ----------------------------------------------------
+        // Freighter signs
+        // ----------------------------------------------------
+
+        const signed =
+            await window.freighterApi.signTransaction(
+                transaction.toXDR(),
+                {
+                    networkPassphrase:
+                        NETWORK_PASSPHRASE
+                }
+            );
+
+
+        if (
+            !signed ||
+            signed.error
+        ) {
+
+            throw new Error(
+                signed?.error?.message ||
+                "Freighter signing failed."
+            );
+        }
+
+
+        // ----------------------------------------------------
+        // Rebuild signed transaction
+        // ----------------------------------------------------
+
+        const signedTransaction =
+            StellarSdk.TransactionBuilder
+                .fromXDR(
+                    signed.signedTxXdr,
+                    NETWORK_PASSPHRASE
+                );
+
+
+        // ----------------------------------------------------
+        // Submit
+        // ----------------------------------------------------
+
+        blockchainBox.innerHTML =
+
+            "Submitting transaction...";
+
+
+        const submission =
+            await server.submitTransaction(
+                signedTransaction
+            );
+
+
+        transactionHash =
+            submission.hash;
+
+
+        blockchainBox.innerHTML =
+
+            "<span class='success'>" +
+            "✓ Transaction submitted" +
+            "</span>" +
+
+            "<br><br>" +
+
+            "<b>Transaction Hash:</b><br>" +
+
+            "<span class='hash'>" +
+            transactionHash +
+            "</span>" +
+
+            "<br><br>" +
+
+            "Waiting for blockchain confirmation...";
+
+
+        // ----------------------------------------------------
+        // Wait for transaction to appear
+        // ----------------------------------------------------
+
+        let confirmedTransaction = null;
+
+
+        for (
+            let attempt = 0;
+            attempt < 30;
+            attempt++
+        ) {
+
+            try {
+
+                confirmedTransaction =
+                    await server
+                        .transactions()
+                        .transaction(
+                            transactionHash
+                        )
+                        .call();
+
+
+                break;
+
+            } catch (error) {
+
+                await new Promise(
+                    resolve =>
+                        setTimeout(
+                            resolve,
+                            1000
+                        )
+                );
+            }
+        }
+
+
+        if (!confirmedTransaction) {
+
+            throw new Error(
+                "Transaction was submitted, but " +
+                "confirmation could not be retrieved."
+            );
+        }
+
+
+        blockchainBox.innerHTML =
+
+            "<span class='success'>" +
+            "✓ Transaction confirmed on Stellar Testnet" +
+            "</span>" +
+
+            "<br><br>" +
+
+            "<b>Transaction Hash:</b><br>" +
+
+            "<span class='hash'>" +
+            transactionHash +
+            "</span>" +
+
+            "<br><br>" +
+
+            "✓ Blockchain record created";
+
+
+        // ----------------------------------------------------
+        // Verify
+        // ----------------------------------------------------
+
+        await verifyBlockchainRecord();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        blockchainBox.innerHTML =
+
+            "<span class='error'>" +
+            "✗ Blockchain transaction failed" +
+            "</span>" +
+
+            "<br><br>" +
+
+            error.message;
+    }
+}
+
+
+// ============================================================
+// VERIFY BLOCKCHAIN RECORD
+// ============================================================
+
+async function verifyBlockchainRecord() {
+
+    const blockchainBox =
+        document.getElementById(
+            "blockchain"
+        );
+
+
+    try {
+
+        blockchainBox.innerHTML +=
+
+            "<br><br>" +
+
+            "Retrieving blockchain record...";
+
+
+        const transaction =
+            await server
+                .transactions()
+                .transaction(
+                    transactionHash
+                )
+                .call();
+
+
+        // ----------------------------------------------------
+        // Validate transaction
+        // ----------------------------------------------------
+
+        if (!transaction.successful) {
+
+            throw new Error(
+                "Transaction was not successful."
+            );
+        }
+
+
+        if (
+            transaction.memo_type !==
+            "hash"
+        ) {
+
+            throw new Error(
+                "No SHA-256 hash memo was found."
+            );
+        }
+
+
+        // ----------------------------------------------------
+        // Horizon returns hash memo as Base64.
+        //
+        // Convert Base64 → bytes → hexadecimal.
+        // ----------------------------------------------------
+
+        const binaryMemo =
+            atob(transaction.memo);
+
+
+        let blockchainFingerprint = "";
+
+
+        for (
+            let i = 0;
+            i < binaryMemo.length;
+            i++
+        ) {
+
+            blockchainFingerprint +=
+
+                binaryMemo
+                    .charCodeAt(i)
+                    .toString(16)
+                    .padStart(2, "0");
+        }
+
+
+        // ----------------------------------------------------
+        // Show fingerprints
+        // ----------------------------------------------------
+
+        blockchainBox.innerHTML +=
+
+            "<br><br>" +
+
+            "<b>Original SHA-256:</b><br>" +
+
+            "<span class='hash'>" +
+            originalFingerprint +
+            "</span>" +
+
+            "<br><br>" +
+
+            "<b>Blockchain SHA-256:</b><br>" +
+
+            "<span class='hash'>" +
+            blockchainFingerprint +
+            "</span>";
+
+
+        // ----------------------------------------------------
+        // Compare
+        // ----------------------------------------------------
+
+        if (
+
+            blockchainFingerprint.toLowerCase() ===
+            originalFingerprint.toLowerCase()
+
+        ) {
+
+            blockchainBox.innerHTML +=
+
+                "<br><br>" +
+
+                "<span class='success' " +
+                "style='font-size:24px'>" +
+
+                "✓ HASH MATCH — DATA VERIFIED" +
+
+                "</span>";
+
+        } else {
+
+            blockchainBox.innerHTML +=
+
+                "<br><br>" +
+
+                "<span class='error' " +
+                "style='font-size:24px'>" +
+
+                "✗ HASH MISMATCH" +
+
+                "</span>";
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        blockchainBox.innerHTML +=
+
+            "<br><br>" +
+
+            "<span class='error'>" +
+
+            "✗ Verification failed" +
+
+            "<br><br>" +
+
+            error.message +
+
+            "</span>";
+    }
+}
+
+
+// ============================================================
+// START
+// ============================================================
+
+initializeWallet();
+
+</script>
+
+</body>
+
+</html> 

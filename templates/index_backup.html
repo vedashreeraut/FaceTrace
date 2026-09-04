@@ -1,0 +1,3663 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FaceTrace</title>
+
+
+    <!-- ======================================================
+         Freighter API
+         Current browser package recommended by Freighter docs.
+         ====================================================== -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-freighter-api/6.0.1/index.min.js"></script>
+
+
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --card: #ffffff;
+            --text: #191b24;
+            --muted: #737783;
+            --line: #e6e7ed;
+            --accent: #6c5ce7;
+            --accent-dark: #5747d8;
+            --success: #14804a;
+            --success-bg: #e9f8ef;
+            --warning-bg: #fff7df;
+            --warning: #8b6700;
+            --error: #c73838;
+            --error-bg: #fff0f0;
+            --shadow:
+                0 15px 45px rgba(30, 32, 50, 0.08);
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Inter",
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                radial-gradient(circle at 15% 5%,
+                    rgba(108, 92, 231, 0.12),
+                    transparent 30%),
+                radial-gradient(circle at 90% 10%,
+                    rgba(63, 182, 168, 0.10),
+                    transparent 25%),
+                var(--bg);
+
+            color: var(--text);
+        }
+
+
+        .container {
+
+            width: min(1180px,
+                    calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding: 30px 0 70px;
+        }
+
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .header {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            margin-bottom: 35px;
+        }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+        }
+
+
+        .brand-icon {
+
+            width: 46px;
+            height: 46px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(135deg,
+                    var(--accent),
+                    #8e7dff);
+
+            color: white;
+
+            font-size: 23px;
+
+            box-shadow:
+                0 10px 25px rgba(108, 92, 231, 0.28);
+        }
+
+
+        .brand-name {
+
+            font-size: 26px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.7px;
+        }
+
+
+        .brand-subtitle {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-top: 2px;
+        }
+
+
+        .network-pill {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 9px 13px;
+
+            border: 1px solid var(--line);
+
+            border-radius: 999px;
+
+            background: white;
+
+            font-size: 13px;
+
+            color: #555966;
+        }
+
+
+        .network-dot {
+
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #23a565;
+
+            box-shadow:
+                0 0 0 4px rgba(35, 165, 101, 0.10);
+        }
+
+
+        /* =====================================================
+           HERO
+           ===================================================== */
+
+        .hero {
+
+            margin-bottom: 28px;
+        }
+
+
+        .hero h1 {
+
+            margin: 0;
+
+            font-size: clamp(34px,
+                    5vw,
+                    58px);
+
+            line-height: 1.02;
+
+            letter-spacing: -2.5px;
+        }
+
+
+        .hero h1 span {
+
+            background:
+                linear-gradient(90deg,
+                    var(--accent),
+                    #9c7dff);
+
+            -webkit-background-clip: text;
+
+            background-clip: text;
+
+            color: transparent;
+        }
+
+
+        .hero p {
+
+            max-width: 680px;
+
+            margin: 16px 0 0;
+
+            color: var(--muted);
+
+            font-size: 17px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           PROGRESS
+           ===================================================== */
+
+        .progress {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 10px;
+
+            margin-bottom: 24px;
+        }
+
+
+        .progress-step {
+
+            padding: 12px 14px;
+
+            border-radius: 12px;
+
+            background: white;
+
+            border: 1px solid var(--line);
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            font-weight: 650;
+        }
+
+
+        .progress-step.active {
+
+            border-color:
+                rgba(108, 92, 231, 0.30);
+
+            background:
+                rgba(108, 92, 231, 0.07);
+
+            color: var(--accent);
+        }
+
+
+        .progress-step.done {
+
+            color: var(--success);
+
+            background:
+                var(--success-bg);
+
+            border-color:
+                rgba(20, 128, 74, 0.16);
+        }
+
+
+        /* =====================================================
+           MAIN CARD
+           ===================================================== */
+
+        .main-card {
+
+            background: var(--card);
+
+            border:
+                1px solid var(--line);
+
+            border-radius: 26px;
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+        }
+
+
+        .upload-area {
+
+            padding: 28px;
+
+            border-bottom:
+                1px solid var(--line);
+        }
+
+
+        .upload-label {
+
+            display: block;
+
+            margin-bottom: 12px;
+
+            font-weight: 750;
+
+            font-size: 15px;
+        }
+
+
+        .dropzone {
+
+            min-height: 245px;
+
+            border:
+                2px dashed #d7d9e4;
+
+            border-radius: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition:
+                0.2s ease;
+
+            background:
+                linear-gradient(180deg,
+                    #fafaff,
+                    #f8f9fc);
+        }
+
+
+        .dropzone:hover,
+        .dropzone.dragging {
+
+            border-color: var(--accent);
+
+            background:
+                rgba(108, 92, 231, 0.06);
+        }
+
+
+        .drop-content {
+
+            padding: 20px;
+        }
+
+
+        .drop-icon {
+
+            font-size: 40px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .drop-title {
+
+            font-size: 18px;
+
+            font-weight: 750;
+
+            margin-bottom: 6px;
+        }
+
+
+        .drop-subtitle {
+
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+
+        #fileInput {
+
+            display: none;
+        }
+
+
+        .preview {
+
+            display: none;
+
+            margin-top: 18px;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            background: #101116;
+        }
+
+
+        .preview img {
+
+            display: block;
+
+            width: 100%;
+
+            max-height: 360px;
+
+            object-fit: contain;
+        }
+
+
+        .analyze-row {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-top: 18px;
+        }
+
+
+        .selected-file {
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        .primary-btn {
+
+            border: none;
+
+            border-radius: 12px;
+
+            padding:
+                13px 19px;
+
+            font-size: 14px;
+
+            font-weight: 750;
+
+            color: white;
+
+            background:
+                linear-gradient(135deg,
+                    var(--accent),
+                    #806eff);
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 20px rgba(108, 92, 231, 0.22);
+
+            transition:
+                0.18s ease;
+        }
+
+
+        .primary-btn:hover {
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 13px 24px rgba(108, 92, 231, 0.28);
+        }
+
+
+        .primary-btn:disabled {
+
+            opacity: 0.5;
+
+            cursor:
+                not-allowed;
+
+            transform: none;
+        }
+
+
+        /* =====================================================
+           CONTENT SECTIONS
+           ===================================================== */
+
+        .section {
+
+            padding: 28px;
+
+            border-bottom:
+                1px solid var(--line);
+        }
+
+
+        .section:last-child {
+
+            border-bottom:
+                none;
+        }
+
+
+        .section-heading {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+
+            gap: 15px;
+
+            margin-bottom: 17px;
+        }
+
+
+        .section-title {
+
+            font-size: 19px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.3px;
+        }
+
+
+        .section-kicker {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            font-weight: 650;
+        }
+
+
+        /* =====================================================
+           STATUS CARDS
+           ===================================================== */
+
+        .status-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 12px;
+        }
+
+
+        .status {
+
+            padding: 15px;
+
+            border-radius: 15px;
+
+            background: #fafbfc;
+
+            border:
+                1px solid var(--line);
+        }
+
+
+        .status strong {
+
+            display: block;
+
+            margin-bottom: 5px;
+        }
+
+
+        .status span {
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        .status.success {
+
+            background:
+                var(--success-bg);
+
+            border-color:
+                rgba(20, 128, 74, 0.12);
+        }
+
+
+        /* =====================================================
+           FILTERS
+           ===================================================== */
+
+        .filters {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .filter {
+
+            border:
+                1px solid var(--line);
+
+            background: white;
+
+            color: var(--muted);
+
+            border-radius: 999px;
+
+            padding:
+                7px 12px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .filter.active {
+
+            color: var(--accent);
+
+            border-color:
+                rgba(108, 92, 231, 0.24);
+
+            background:
+                rgba(108, 92, 231, 0.07);
+        }
+
+
+        /* =====================================================
+           SOCIAL RESULTS
+           ===================================================== */
+
+        .results-list {
+
+            display: grid;
+
+            gap: 12px;
+        }
+
+
+        .result {
+
+            display: grid;
+
+            grid-template-columns:
+                110px 1fr auto;
+
+            gap: 17px;
+
+            align-items: center;
+
+            padding: 15px;
+
+            border:
+                1px solid var(--line);
+
+            border-radius: 18px;
+
+            background: white;
+
+            transition:
+                0.18s ease;
+
+            cursor: pointer;
+        }
+
+
+        .result:hover {
+
+            border-color:
+                #cfd0da;
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 8px 24px rgba(30, 32, 50, 0.06);
+        }
+
+
+        .result.selected {
+
+            border:
+                2px solid var(--accent);
+
+            background:
+                rgba(108, 92, 231, 0.035);
+        }
+
+
+        .thumbnail {
+
+            width: 110px;
+            height: 90px;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            background:
+                #eef0f5;
+        }
+
+
+        .thumbnail img {
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+
+        .result-platform {
+
+            display: inline-block;
+
+            padding:
+                5px 8px;
+
+            border-radius: 999px;
+
+            background:
+                #f0f1f5;
+
+            color: #5d606b;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.4px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .result-title {
+
+            font-size: 15px;
+
+            font-weight: 750;
+
+            line-height: 1.35;
+
+            margin-bottom: 5px;
+        }
+
+
+        .result-source {
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        .result-actions {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .small-btn {
+
+            border:
+                1px solid var(--line);
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding:
+                8px 11px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .small-btn.verify {
+
+            color: white;
+
+            background:
+                var(--accent);
+
+            border-color:
+                var(--accent);
+        }
+
+
+        /* =====================================================
+           BLOCKCHAIN
+           ===================================================== */
+
+        .blockchain-panel {
+
+            padding: 19px;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(135deg,
+                    #f7f5ff,
+                    #faf9ff);
+
+            border:
+                1px solid rgba(108, 92, 231, 0.14);
+        }
+
+
+        .blockchain-meta {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .meta {
+
+            padding: 13px;
+
+            border-radius: 12px;
+
+            background: white;
+
+            border:
+                1px solid rgba(108, 92, 231, 0.10);
+        }
+
+
+        .meta-label {
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            margin-bottom: 5px;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.5px;
+
+            font-weight: 700;
+        }
+
+
+        .meta-value {
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            word-break:
+                break-all;
+        }
+
+
+        .fingerprint {
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            background: #171820;
+
+            color: #cfd3df;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                monospace;
+
+            font-size: 12px;
+
+            word-break:
+                break-all;
+
+            line-height: 1.6;
+
+            margin-bottom: 15px;
+        }
+
+
+        .verify-bar {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+
+            gap: 15px;
+        }
+
+
+        .verify-status {
+
+            display: none;
+
+            padding:
+                12px 14px;
+
+            border-radius: 12px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        .verify-status.success {
+
+            display: block;
+
+            color: var(--success);
+
+            background:
+                var(--success-bg);
+        }
+
+
+        .verify-status.error {
+
+            display: block;
+
+            color: var(--error);
+
+            background:
+                var(--error-bg);
+        }
+
+
+        /* =====================================================
+           EMPTY / LOADING
+           ===================================================== */
+
+        .empty {
+
+            padding: 35px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            border:
+                1px dashed #dfe1e9;
+
+            border-radius: 16px;
+        }
+
+
+        .spinner {
+
+            width: 17px;
+            height: 17px;
+
+            border:
+                2px solid rgba(255, 255, 255, 0.4);
+
+            border-top-color:
+                white;
+
+            border-radius: 50%;
+
+            display: inline-block;
+
+            animation:
+                spin .7s linear infinite;
+
+            vertical-align: middle;
+
+            margin-right: 7px;
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform:
+                    rotate(360deg);
+            }
+        }
+
+
+        .toast {
+
+            position: fixed;
+
+            bottom: 25px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%) translateY(100px);
+
+            padding:
+                12px 17px;
+
+            border-radius: 12px;
+
+            background:
+                #1b1d25;
+
+            color: white;
+
+            font-size: 13px;
+
+            box-shadow:
+                0 15px 35px rgba(0, 0, 0, 0.18);
+
+            transition:
+                0.25s ease;
+
+            z-index: 100;
+        }
+
+
+        .toast.show {
+
+            transform:
+                translateX(-50%) translateY(0);
+        }
+
+
+        @media (max-width: 760px) {
+
+            .header {
+
+                align-items:
+                    flex-start;
+
+                gap: 15px;
+
+                flex-direction:
+                    column;
+            }
+
+
+            .network-pill {
+
+                align-self:
+                    flex-start;
+            }
+
+
+            .progress {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .status-grid,
+            .blockchain-meta {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .result {
+
+                grid-template-columns:
+                    82px 1fr;
+
+            }
+
+
+            .thumbnail {
+
+                width: 82px;
+                height: 75px;
+            }
+
+
+            .result-actions {
+
+                grid-column:
+                    1 / -1;
+
+                flex-direction:
+                    row;
+
+                justify-content:
+                    flex-end;
+            }
+
+
+            .analyze-row {
+
+                align-items:
+                    stretch;
+
+                flex-direction:
+                    column;
+            }
+
+
+            .verify-bar {
+
+                align-items:
+                    stretch;
+
+                flex-direction:
+                    column;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+
+        <!-- ======================================================
+         HEADER
+         ====================================================== -->
+
+        <header class="header">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    🔎
+                </div>
+
+                <div>
+
+                    <div class="brand-name">
+                        FaceTrace
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Trace a face. Verify what you found.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="network-pill">
+
+                <span class="network-dot"></span>
+
+                Stellar Testnet
+
+            </div>
+
+        </header>
+
+
+        <!-- ======================================================
+         HERO
+         ====================================================== -->
+
+        <section class="hero">
+
+            <h1>
+                Discover where a face
+                <span>appears online.</span>
+            </h1>
+
+            <p>
+                Upload an image, search the web through
+                Google Lens, discover matching social-media
+                content, and create a tamper-evident
+                blockchain fingerprint.
+            </p>
+
+        </section>
+
+
+        <!-- ======================================================
+         PROGRESS
+         ====================================================== -->
+
+        <div class="progress">
+
+            <div id="stepUpload" class="progress-step active">
+                1 · Upload
+            </div>
+
+            <div id="stepSearch" class="progress-step">
+                2 · Discover
+            </div>
+
+            <div id="stepSocial" class="progress-step">
+                3 · Select
+            </div>
+
+            <div id="stepBlock" class="progress-step">
+                4 · Verify
+            </div>
+
+        </div>
+
+
+        <!-- ======================================================
+         MAIN CARD
+         ====================================================== -->
+
+        <main class="main-card">
+
+
+            <!-- ==================================================
+             UPLOAD
+             ================================================== -->
+
+            <section class="upload-area">
+
+                <label class="upload-label">
+                    Upload a face image
+                </label>
+
+
+                <label id="dropzone" class="dropzone" for="fileInput">
+
+                    <div class="drop-content">
+
+                        <div class="drop-icon">
+                            📸
+                        </div>
+
+                        <div class="drop-title">
+                            Drop an image here
+                        </div>
+
+                        <div class="drop-subtitle">
+                            or click to browse · JPG, PNG, WEBP
+                        </div>
+
+                    </div>
+
+                </label>
+
+
+                <input id="fileInput" type="file" accept=".jpg,.jpeg,.png,.webp">
+
+
+                <div id="preview" class="preview">
+                    <img id="previewImage" alt="Uploaded image">
+                </div>
+
+
+                <div class="analyze-row">
+
+                    <div id="selectedFile" class="selected-file">
+                        No image selected
+                    </div>
+
+
+                    <button id="analyzeBtn" class="primary-btn" disabled>
+                        Analyze Image
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+             FACE STATUS
+             ================================================== -->
+
+            <section id="analysisSection" class="section" style="display:none">
+
+                <div class="section-heading">
+
+                    <div class="section-title">
+                        Face analysis
+                    </div>
+
+                    <div class="section-kicker">
+                        Computer vision
+                    </div>
+
+                </div>
+
+
+                <div class="status-grid">
+
+                    <div id="faceStatus" class="status">
+
+                        <strong>
+                            Face detection
+                        </strong>
+
+                        <span>
+                            Waiting for analysis
+                        </span>
+
+                    </div>
+
+
+                    <div id="encodingStatus" class="status">
+
+                        <strong>
+                            Face encoding
+                        </strong>
+
+                        <span>
+                            Waiting for analysis
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+             SOCIAL RESULTS
+             ================================================== -->
+
+            <section id="resultsSection" class="section" style="display:none">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <div class="section-title">
+                            Social media matches
+                        </div>
+
+                        <div id="resultsCount" class="section-kicker">
+                            Genuine Google Lens results
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div id="filters" class="filters"></div>
+
+
+                <div id="resultsList" class="results-list"></div>
+
+            </section>
+
+            <!-- ==================================================
+     EVIDENCE INTELLIGENCE
+     ================================================== -->
+
+            <section id="evidenceSection" class="section" style="display:none">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <div class="section-title">
+                            Evidence intelligence
+                        </div>
+
+                        <div class="section-kicker">
+                            Why this result?
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="blockchain-panel">
+
+                    <div id="matchBadge" style="
+                display:inline-block;
+                padding:7px 11px;
+                border-radius:999px;
+                background:#f0f1f5;
+                font-size:12px;
+                font-weight:800;
+                margin-bottom:15px;
+            ">
+                        Match type
+                    </div>
+
+
+                    <div id="scoreDisplay" style="
+                font-size:40px;
+                font-weight:850;
+                letter-spacing:-1px;
+                margin-bottom:4px;
+            ">
+                        --
+                    </div>
+
+
+                    <div id="scoreLabel" style="
+                color:#737783;
+                font-size:13px;
+                margin-bottom:20px;
+            ">
+                        Evidence score
+                    </div>
+
+
+                    <div id="scoreBar" style="
+                height:9px;
+                border-radius:999px;
+                background:#e9eaf0;
+                overflow:hidden;
+                margin-bottom:22px;
+            ">
+
+                        <div id="scoreFill" style="
+                    height:100%;
+                    width:0%;
+                    border-radius:999px;
+                    background:linear-gradient(
+                        90deg,
+                        #6c5ce7,
+                        #8d7dff
+                    );
+                    transition:width .5s ease;
+                "></div>
+
+                    </div>
+
+
+                    <div style="
+                font-weight:800;
+                margin-bottom:10px;
+            ">
+                        Why this result?
+                    </div>
+
+
+                    <div id="whyList" style="
+                display:grid;
+                gap:8px;
+                margin-bottom:18px;
+            "></div>
+
+
+                    <div id="limitationsBox" style="
+                display:none;
+                padding:12px;
+                border-radius:12px;
+                background:#fff8e7;
+                color:#775900;
+                font-size:12px;
+            "></div>
+
+                </div>
+
+            </section>
+
+            <!-- ==================================================
+             BLOCKCHAIN
+             ================================================== -->
+
+            <section id="blockchainSection" class="section" style="display:none">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <div class="section-title">
+                            Blockchain verification
+                        </div>
+
+                        <div class="section-kicker">
+                            Stellar Testnet
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="blockchain-panel">
+
+
+                    <div id="selectedSummary" style="
+                        margin-bottom:18px;
+                        line-height:1.6;
+                    "></div>
+
+
+                    <div class="blockchain-meta">
+
+                        <div class="meta">
+
+                            <div class="meta-label">
+                                Network
+                            </div>
+
+                            <div class="meta-value">
+                                Stellar Testnet
+                            </div>
+
+                        </div>
+
+
+                        <div class="meta">
+
+                            <div class="meta-label">
+                                Wallet
+                            </div>
+
+                            <div id="walletValue" class="meta-value">
+                                Not connected
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="meta-label">
+                        SHA-256 fingerprint
+                    </div>
+
+                    <div id="fingerprint" class="fingerprint">
+                        Waiting for a result...
+                    </div>
+
+
+                    <div class="verify-bar">
+
+                        <div id="verifyStatus" class="verify-status"></div>
+
+
+                        <button id="verifyBtn" class="primary-btn" disabled>
+                            🔐 Verify on Stellar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+             TRANSACTION
+             ================================================== -->
+
+            <section id="transactionSection" class="section" style="display:none">
+
+                <div class="section-heading">
+
+                    <div class="section-title">
+                        Blockchain record
+                    </div>
+
+                    <div class="section-kicker">
+                        Tamper-evident record
+                    </div>
+
+                </div>
+
+
+                <div id="transactionDetails" class="blockchain-panel"></div>
+
+            </section>
+
+            <!-- ==================================================
+     TAMPER DEMONSTRATION
+     ================================================== -->
+
+            <section id="tamperSection" class="section" style="display:none">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <div class="section-title">
+                            Tamper demonstration
+                        </div>
+
+                        <div class="section-kicker">
+                            See how the fingerprint detects changes
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="blockchain-panel">
+
+                    <p style="
+                color:#737783;
+                font-size:13px;
+                line-height:1.6;
+                margin-top:0;
+            ">
+                        FaceTrace can simulate a modification to the
+                        discovered evidence and recompute its fingerprint.
+                        A changed record produces a different SHA-256 value.
+                    </p>
+
+
+                    <button id="tamperBtn" class="primary-btn">
+                        ⚡ Simulate Tampering
+                    </button>
+
+
+                    <div id="tamperResult" style="
+                display:none;
+                margin-top:20px;
+            "></div>
+
+                </div>
+
+            </section>
+
+
+        </main>
+
+    </div>
+
+
+    <div id="toast" class="toast">
+        Ready
+    </div>
+
+
+    <script>
+
+
+        // ============================================================
+        // APPLICATION STATE
+        // ============================================================
+
+        const state = {
+
+            file: null,
+
+            results: [],
+
+            selectedResult: null,
+
+            fingerprint: null,
+
+            transactionHash: null,
+
+            walletAddress: null,
+
+            evidence: null,
+
+            evidenceRecord: null
+
+        };
+
+
+        // ============================================================
+        // DOM
+        // ============================================================
+
+        const fileInput =
+            document.getElementById(
+                "fileInput"
+            );
+
+        const dropzone =
+            document.getElementById(
+                "dropzone"
+            );
+
+        const preview =
+            document.getElementById(
+                "preview"
+            );
+
+        const previewImage =
+            document.getElementById(
+                "previewImage"
+            );
+
+        const selectedFile =
+            document.getElementById(
+                "selectedFile"
+            );
+
+        const analyzeBtn =
+            document.getElementById(
+                "analyzeBtn"
+            );
+
+        const analysisSection =
+            document.getElementById(
+                "analysisSection"
+            );
+
+        const resultsSection =
+            document.getElementById(
+                "resultsSection"
+            );
+
+        const blockchainSection =
+            document.getElementById(
+                "blockchainSection"
+            );
+
+        const transactionSection =
+            document.getElementById(
+                "transactionSection"
+            );
+
+        const resultsList =
+            document.getElementById(
+                "resultsList"
+            );
+
+        const filters =
+            document.getElementById(
+                "filters"
+            );
+
+        const fingerprintElement =
+            document.getElementById(
+                "fingerprint"
+            );
+
+        const verifyBtn =
+            document.getElementById(
+                "verifyBtn"
+            );
+
+        const verifyStatus =
+            document.getElementById(
+                "verifyStatus"
+            );
+
+        const walletValue =
+            document.getElementById(
+                "walletValue"
+            );
+
+        const tamperSection =
+            document.getElementById(
+                "tamperSection"
+            );
+
+
+        const tamperBtn =
+            document.getElementById(
+                "tamperBtn"
+            );
+
+
+        const tamperResult =
+            document.getElementById(
+                "tamperResult"
+            );
+
+
+        // ============================================================
+        // UTILITIES
+        // ============================================================
+
+        function toast(message) {
+
+            const element =
+                document.getElementById(
+                    "toast"
+                );
+
+            element.textContent =
+                message;
+
+            element.classList.add(
+                "show"
+            );
+
+            setTimeout(
+                () => {
+                    element.classList.remove(
+                        "show"
+                    );
+                },
+                2200
+            );
+        }
+
+
+        function setStep(
+            stepNumber
+        ) {
+
+            const steps = [
+
+                document.getElementById(
+                    "stepUpload"
+                ),
+
+                document.getElementById(
+                    "stepSearch"
+                ),
+
+                document.getElementById(
+                    "stepSocial"
+                ),
+
+                document.getElementById(
+                    "stepBlock"
+                )
+
+            ];
+
+
+            steps.forEach(
+                (step, index) => {
+
+                    step.classList.remove(
+                        "active",
+                        "done"
+                    );
+
+                    if (
+                        index <
+                        stepNumber - 1
+                    ) {
+
+                        step.classList.add(
+                            "done"
+                        );
+
+                    } else if (
+                        index ===
+                        stepNumber - 1
+                    ) {
+
+                        step.classList.add(
+                            "active"
+                        );
+                    }
+
+                }
+            );
+        }
+
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+        }
+
+
+        // ============================================================
+        // FILE HANDLING
+        // ============================================================
+
+        fileInput.addEventListener(
+            "change",
+            event => {
+
+                const file =
+                    event.target.files[0];
+
+                if (file) {
+
+                    setFile(file);
+                }
+
+            }
+        );
+
+
+        function setFile(file) {
+
+            state.file =
+                file;
+
+
+            selectedFile.textContent =
+                `${file.name} · ${(
+                    file.size / 1024
+                ).toFixed(0)} KB`;
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                event => {
+
+                    previewImage.src =
+                        event.target.result;
+
+                    preview.style.display =
+                        "block";
+                };
+
+
+            reader.readAsDataURL(
+                file
+            );
+
+
+            analyzeBtn.disabled =
+                false;
+
+
+            toast(
+                "Image ready to analyze"
+            );
+
+
+            resetResults();
+        }
+
+
+        dropzone.addEventListener(
+            "dragover",
+            event => {
+
+                event.preventDefault();
+
+                dropzone.classList.add(
+                    "dragging"
+                );
+
+            }
+        );
+
+
+        dropzone.addEventListener(
+            "dragleave",
+            () => {
+
+                dropzone.classList.remove(
+                    "dragging"
+                );
+
+            }
+        );
+
+
+        dropzone.addEventListener(
+            "drop",
+            event => {
+
+                event.preventDefault();
+
+                dropzone.classList.remove(
+                    "dragging"
+                );
+
+
+                const file =
+                    event.dataTransfer.files[0];
+
+                if (file) {
+
+                    setFile(file);
+                }
+
+            }
+        );
+
+
+        // ============================================================
+        // RESET
+        // ============================================================
+
+        function resetResults() {
+
+            state.results = [];
+
+            state.selectedResult = null;
+
+            state.fingerprint = null;
+
+            state.transactionHash = null;
+
+
+            analysisSection.style.display =
+                "none";
+
+            resultsSection.style.display =
+                "none";
+
+            blockchainSection.style.display =
+                "none";
+
+            transactionSection.style.display =
+                "none";
+
+
+            verifyBtn.disabled =
+                true;
+
+
+            setStep(1);
+        }
+
+
+        // ============================================================
+        // ANALYZE
+        // ============================================================
+
+        analyzeBtn.addEventListener(
+            "click",
+            analyzeImage
+        );
+
+
+        async function analyzeImage() {
+
+            if (!state.file) {
+
+                return;
+            }
+
+
+            analyzeBtn.disabled =
+                true;
+
+
+            analyzeBtn.innerHTML =
+                `<span class="spinner"></span>
+         Searching...`;
+
+
+            analysisSection.style.display =
+                "block";
+
+
+            setStep(2);
+
+
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                "image",
+                state.file
+            );
+
+
+            try {
+
+                // ----------------------------------------------------
+                // Call Flask
+                // ----------------------------------------------------
+
+                const response =
+                    await fetch(
+                        "/api/analyze",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok || !data.success) {
+
+                    throw new Error(
+                        data.error ||
+                        "Image analysis failed."
+                    );
+                }
+
+
+                // ----------------------------------------------------
+                // Face status
+                // ----------------------------------------------------
+
+                const faceStatus =
+                    document.getElementById(
+                        "faceStatus"
+                    );
+
+                faceStatus.classList.add(
+                    "success"
+                );
+
+                faceStatus.innerHTML =
+
+                    `<strong>
+                ✓ Face detected
+             </strong>
+             <span>
+                One face found in the image
+             </span>`;
+
+
+                const encodingStatus =
+                    document.getElementById(
+                        "encodingStatus"
+                    );
+
+                encodingStatus.classList.add(
+                    "success"
+                );
+
+                encodingStatus.innerHTML =
+
+                    `<strong>
+                ✓ Face encoding generated
+             </strong>
+             <span>
+                ${data.face.encoding_dimensions}
+                -dimensional encoding
+             </span>`;
+
+
+                // ----------------------------------------------------
+                // Results
+                // ----------------------------------------------------
+
+                state.results =
+                    data.results || [];
+
+
+                renderFilters();
+
+                renderResults();
+
+
+                resultsSection.style.display =
+                    "block";
+
+
+                setStep(3);
+
+
+                toast(
+                    `${state.results.length} social results found`
+                );
+
+
+            } catch (error) {
+
+                toast(
+                    error.message
+                );
+
+
+                analysisSection.style.display =
+                    "none";
+
+
+            } finally {
+
+                analyzeBtn.disabled =
+                    false;
+
+                analyzeBtn.textContent =
+                    "Analyze Image";
+            }
+        }
+
+
+        // ============================================================
+        // FILTERS
+        // ============================================================
+
+        function renderFilters() {
+
+            filters.innerHTML = "";
+
+
+            const platforms = [
+
+                "All",
+
+                ...new Set(
+                    state.results.map(
+                        result =>
+                            result.platform
+                    )
+                )
+
+            ];
+
+
+            platforms.forEach(
+                (platform, index) => {
+
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    button.className =
+                        "filter" +
+                        (
+                            index === 0
+                                ? " active"
+                                : ""
+                        );
+
+
+                    button.textContent =
+                        platform;
+
+
+                    button.onclick =
+                        () => {
+
+                            document
+                                .querySelectorAll(
+                                    ".filter"
+                                )
+                                .forEach(
+                                    item =>
+                                        item.classList.remove(
+                                            "active"
+                                        )
+                                );
+
+
+                            button.classList.add(
+                                "active"
+                            );
+
+
+                            renderResults(
+                                platform
+                            );
+                        };
+
+
+                    filters.appendChild(
+                        button
+                    );
+
+                }
+            );
+        }
+
+
+        // ============================================================
+        // RESULTS
+        // ============================================================
+
+        function renderResults(
+            platform = "All"
+        ) {
+
+            resultsList.innerHTML =
+                "";
+
+
+            const visibleResults =
+                platform === "All"
+                    ? state.results
+                    : state.results.filter(
+                        result =>
+                            result.platform ===
+                            platform
+                    );
+
+
+            document.getElementById(
+                "resultsCount"
+            ).textContent =
+
+                `${visibleResults.length} result(s) ·
+         live Google Lens search`;
+
+
+            if (
+                visibleResults.length === 0
+            ) {
+
+                resultsList.innerHTML =
+                    `
+            <div class="empty">
+                No results for this platform.
+            </div>
+            `;
+
+                return;
+            }
+
+
+            visibleResults.forEach(
+                (result, index) => {
+
+                    const originalIndex =
+                        state.results.indexOf(
+                            result
+                        );
+
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    card.className =
+                        "result";
+
+
+                    if (
+                        state.selectedResult ===
+                        result
+                    ) {
+
+                        card.classList.add(
+                            "selected"
+                        );
+                    }
+
+
+                    const thumbnail =
+                        result.thumbnail
+                            ? `
+                    <img
+                        src="${escapeHtml(
+                                result.thumbnail
+                            )}"
+                        alt=""
+                    >
+                  `
+                            : "";
+
+
+                    card.innerHTML =
+
+                        `
+                <div class="thumbnail">
+                    ${thumbnail}
+                </div>
+
+                <div>
+
+                    <div class="result-platform">
+                        ${escapeHtml(
+                            result.platform
+                        )}
+                    </div>
+
+                    <div class="result-title">
+                        ${escapeHtml(
+                            result.title
+                        )}
+                    </div>
+
+                    <div class="result-source">
+                        ${escapeHtml(
+                            result.source ||
+                            ""
+                        )}
+                    </div>
+
+                </div>
+
+                <div class="result-actions">
+
+                    <button
+                        class="small-btn"
+                        data-action="view"
+                    >
+                        View ↗
+                    </button>
+
+                    <button
+                        class="small-btn verify"
+                        data-action="verify"
+                    >
+                        Verify
+                    </button>
+
+                </div>
+                `;
+
+
+                    // ------------------------------------------------
+                    // Select card
+                    // ------------------------------------------------
+
+                    card.addEventListener(
+                        "click",
+                        event => {
+
+                            if (
+                                event.target
+                                    .dataset
+                                    .action
+                            ) {
+
+                                return;
+                            }
+
+
+                            selectResult(
+                                originalIndex
+                            );
+                        }
+                    );
+
+
+                    // ------------------------------------------------
+                    // View
+                    // ------------------------------------------------
+
+                    card.querySelector(
+                        '[data-action="view"]'
+                    ).addEventListener(
+                        "click",
+                        event => {
+
+                            event.stopPropagation();
+
+                            window.open(
+                                result.url,
+                                "_blank"
+                            );
+
+                        }
+                    );
+
+
+                    // ------------------------------------------------
+                    // Verify
+                    // ------------------------------------------------
+
+                    card.querySelector(
+                        '[data-action="verify"]'
+                    ).addEventListener(
+                        "click",
+                        event => {
+
+                            event.stopPropagation();
+
+                            selectResult(
+                                originalIndex
+                            );
+
+
+                            document
+                                .getElementById(
+                                    "blockchainSection"
+                                )
+                                .scrollIntoView({
+                                    behavior: "smooth"
+                                });
+
+                        }
+                    );
+
+
+                    resultsList.appendChild(
+                        card
+                    );
+
+                }
+            );
+        }
+
+
+        // ============================================================
+        // SELECT RESULT
+        // ============================================================
+
+        async function selectResult(index) {
+
+            state.selectedResult =
+                state.results[index];
+
+
+            state.evidenceRecord = {
+
+                platform:
+                    state.selectedResult.platform || "",
+
+                title:
+                    state.selectedResult.title || "",
+
+                url:
+                    state.selectedResult.url || ""
+
+            };
+
+
+            // --------------------------------------------------------
+            // Highlight selected card
+            // --------------------------------------------------------
+
+            renderResults();
+
+
+            // --------------------------------------------------------
+            // Build evidence fingerprint locally
+            // --------------------------------------------------------
+
+            const canonicalRecord = {
+
+                platform:
+                    state.selectedResult.platform || "",
+
+                title:
+                    state.selectedResult.title || "",
+
+                url:
+                    state.selectedResult.url || ""
+
+            };
+
+
+            const canonicalJson =
+                JSON.stringify(
+                    canonicalRecord,
+                    Object.keys(
+                        canonicalRecord
+                    ).sort()
+                );
+
+
+            const encoder =
+                new TextEncoder();
+
+
+            const hashBuffer =
+                await crypto.subtle.digest(
+                    "SHA-256",
+                    encoder.encode(
+                        canonicalJson
+                    )
+                );
+
+
+            const hashArray =
+                Array.from(
+                    new Uint8Array(
+                        hashBuffer
+                    )
+                );
+
+
+            state.fingerprint =
+                hashArray
+                    .map(
+                        byte =>
+                            byte
+                                .toString(16)
+                                .padStart(
+                                    2,
+                                    "0"
+                                )
+                    )
+                    .join("");
+
+
+            // --------------------------------------------------------
+            // Evidence score
+            // --------------------------------------------------------
+
+            const explicitMatch =
+                state.selectedResult.match_type ||
+                "Related Match";
+
+
+            const evidenceScore =
+                state.selectedResult.evidence_score ??
+                0;
+
+
+            const evidenceLevel =
+                state.selectedResult.evidence_level ||
+                "Unknown";
+
+
+            state.evidence = {
+
+                match_type:
+                    explicitMatch,
+
+                score:
+                    evidenceScore,
+
+                level:
+                    evidenceLevel,
+
+                why:
+                    state.selectedResult.why || [],
+
+                limitations:
+                    state.selectedResult.limitations || []
+
+            };
+
+
+            // --------------------------------------------------------
+            // Show evidence section
+            // --------------------------------------------------------
+
+            document.getElementById(
+                "evidenceSection"
+            ).style.display =
+                "block";
+
+
+            const matchBadge =
+                document.getElementById(
+                    "matchBadge"
+                );
+
+
+            matchBadge.textContent =
+                explicitMatch;
+
+
+            const scoreDisplay =
+                document.getElementById(
+                    "scoreDisplay"
+                );
+
+
+            scoreDisplay.textContent =
+                `${evidenceScore} / 100`;
+
+
+            const scoreLabel =
+                document.getElementById(
+                    "scoreLabel"
+                );
+
+
+            scoreLabel.textContent =
+                `${evidenceLevel} evidence strength`;
+
+
+            const scoreFill =
+                document.getElementById(
+                    "scoreFill"
+                );
+
+
+            scoreFill.style.width =
+                `${evidenceScore}%`;
+
+
+            // --------------------------------------------------------
+            // Why list
+            // --------------------------------------------------------
+
+            const whyList =
+                document.getElementById(
+                    "whyList"
+                );
+
+
+            whyList.innerHTML = "";
+
+
+            state.evidence.why.forEach(
+                reason => {
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    item.style.cssText =
+                        `
+                padding:10px 12px;
+                border-radius:10px;
+                background:#fafbfc;
+                border:1px solid #e8e9ef;
+                font-size:13px;
+                `;
+
+
+                    item.textContent =
+                        `✓ ${reason}`;
+
+
+                    whyList.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+
+            // --------------------------------------------------------
+            // Limitations
+            // --------------------------------------------------------
+
+            const limitationsBox =
+                document.getElementById(
+                    "limitationsBox"
+                );
+
+
+            if (
+                state.evidence.limitations.length
+            ) {
+
+                limitationsBox.style.display =
+                    "block";
+
+
+                limitationsBox.innerHTML =
+                    "<strong>Note:</strong><br>" +
+                    state.evidence
+                        .limitations
+                        .map(
+                            item =>
+                                `• ${item}`
+                        )
+                        .join("<br>");
+
+            } else {
+
+                limitationsBox.style.display =
+                    "none";
+            }
+
+
+            // --------------------------------------------------------
+            // Blockchain section
+            // --------------------------------------------------------
+
+            blockchainSection.style.display =
+                "block";
+
+
+            document.getElementById(
+                "selectedSummary"
+            ).innerHTML =
+
+                `
+        <strong>
+            Selected result
+        </strong>
+
+        <div style="
+            color:#737783;
+            font-size:13px;
+            margin-top:5px;
+        ">
+
+            ${escapeHtml(
+                    state.selectedResult.platform
+                )}
+
+            ·
+
+            ${escapeHtml(
+                    state.selectedResult.title
+                )}
+
+        </div>
+        `;
+
+
+            fingerprintElement.textContent =
+                state.fingerprint;
+
+
+            verifyStatus.className =
+                "verify-status";
+
+
+            verifyStatus.textContent =
+                "";
+
+
+            verifyBtn.disabled =
+                false;
+
+
+            setStep(4);
+
+
+            toast(
+                "Evidence selected for verification"
+            );
+
+
+            evidenceSection
+                .scrollIntoView({
+                    behavior: "smooth"
+                });
+        }
+
+        // ============================================================
+        // FREIGHTER
+        // ============================================================
+
+        async function connectFreighter() {
+
+            if (!window.freighterApi) {
+
+                throw new Error(
+                    "Freighter was not detected."
+                );
+            }
+
+
+            // --------------------------------------------------------
+            // Step 1: Make sure the extension exists
+            // --------------------------------------------------------
+
+            const connected =
+                await window.freighterApi.isConnected();
+
+
+            if (
+                !connected ||
+                !connected.isConnected
+            ) {
+
+                throw new Error(
+                    "Freighter is not installed or available."
+                );
+            }
+
+
+            // --------------------------------------------------------
+            // Step 2: Ask for access.
+            //
+            // IMPORTANT:
+            // requestAccess() is the recommended connection method.
+            // If this dapp was already authorized, Freighter should
+            // return the address without requiring another popup.
+            // --------------------------------------------------------
+
+            const access =
+                await window.freighterApi.requestAccess();
+
+
+            if (access.error) {
+
+                throw new Error(
+                    access.error.message
+                );
+            }
+
+
+            // --------------------------------------------------------
+            // Step 3: Get the public wallet address
+            // --------------------------------------------------------
+
+            if (!access.address) {
+
+                throw new Error(
+                    "Freighter did not return a wallet address."
+                );
+            }
+
+
+            state.walletAddress =
+                access.address;
+
+
+            walletValue.textContent =
+                state.walletAddress;
+
+
+            return state.walletAddress;
+        }
+
+
+        // ============================================================
+        // VERIFY ON STELLAR
+        // ============================================================
+
+        verifyBtn.addEventListener(
+            "click",
+            verifyOnStellar
+        );
+
+
+        async function verifyOnStellar() {
+
+            if (
+                !state.selectedResult
+            ) {
+
+                toast(
+                    "Select a social-media result first."
+                );
+
+                return;
+            }
+
+
+            verifyBtn.disabled =
+                true;
+
+
+            verifyBtn.innerHTML =
+                `<span class="spinner"></span>
+         Preparing...`;
+
+
+            try {
+
+                // ----------------------------------------------------
+                // Get Freighter wallet
+                // ----------------------------------------------------
+
+                const wallet =
+                    await connectFreighter();
+
+
+                walletValue.textContent =
+                    wallet;
+
+
+                // ----------------------------------------------------
+                // Prepare transaction
+                // ----------------------------------------------------
+
+                const prepareResponse =
+                    await fetch(
+                        "/api/prepare-transaction",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                result:
+                                    state.selectedResult
+                            })
+                        }
+                    );
+
+
+                const prepared =
+                    await prepareResponse.json();
+
+
+                if (
+                    !prepareResponse.ok ||
+                    !prepared.success
+                ) {
+
+                    throw new Error(
+                        prepared.error ||
+                        "Could not prepare transaction."
+                    );
+                }
+
+
+                /*
+                 * Use the backend-generated fingerprint.
+                 * This guarantees that the exact same value
+                 * is being placed into the transaction memo.
+                 */
+
+                state.fingerprint =
+                    prepared.fingerprint;
+
+                if (
+                    prepared.evidence
+                ) {
+
+                    state.evidence =
+                        prepared.evidence;
+                }
+
+
+                fingerprintElement.textContent =
+                    state.fingerprint;
+
+
+                // ----------------------------------------------------
+                // Request Freighter signature
+                // ----------------------------------------------------
+
+                verifyBtn.innerHTML =
+                    `<span class="spinner"></span>
+             Waiting for Freighter...`;
+
+
+                const networkInfo =
+                    await window.freighterApi.getNetworkDetails();
+
+                console.log(
+                    "Freighter network:",
+                    networkInfo
+                );
+
+                if (networkInfo.error) {
+                    throw new Error(
+                        networkInfo.error.message
+                    );
+                }
+
+                if (
+                    networkInfo.networkPassphrase &&
+                    networkInfo.networkPassphrase !==
+                    "Test SDF Network ; September 2015"
+                ) {
+                    throw new Error(
+                        "Freighter is not on Stellar Testnet. " +
+                        "Please switch Freighter to Testnet."
+                    );
+                }
+                const signed =
+                    await window.freighterApi.signTransaction(
+                        prepared.xdr,
+                        {
+                            networkPassphrase:
+                                "Test SDF Network ; September 2015",
+
+                            address:
+                                wallet
+                        }
+                    );
+
+
+                if (
+                    signed.error
+                ) {
+
+                    throw new Error(
+                        signed.error.message
+                    );
+                }
+
+
+                // ----------------------------------------------------
+                // Submit signed transaction
+                // ----------------------------------------------------
+
+                verifyBtn.innerHTML =
+                    `<span class="spinner"></span>
+             Recording...`;
+
+
+                const submitResponse =
+                    await fetch(
+                        "/api/submit-transaction",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                signed_xdr:
+                                    signed.signedTxXdr
+                            })
+                        }
+                    );
+
+
+                const submitted =
+                    await submitResponse.json();
+
+
+                if (
+                    !submitResponse.ok ||
+                    !submitted.success
+                ) {
+
+                    throw new Error(
+                        submitted.error ||
+                        "Transaction submission failed."
+                    );
+                }
+
+
+                state.transactionHash =
+                    submitted.transaction_hash;
+
+
+                // ----------------------------------------------------
+                // Verify
+                // ----------------------------------------------------
+
+                verifyBtn.innerHTML =
+                    `<span class="spinner"></span>
+             Checking blockchain...`;
+
+
+                const verifyResponse =
+                    await fetch(
+                        "/api/verify-transaction",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                transaction_hash:
+                                    state.transactionHash,
+
+                                fingerprint:
+                                    state.fingerprint
+                            })
+                        }
+                    );
+
+
+                const verified =
+                    await verifyResponse.json();
+
+
+                if (
+                    !verifyResponse.ok ||
+                    !verified.success
+                ) {
+
+                    throw new Error(
+                        verified.error ||
+                        "Blockchain verification failed."
+                    );
+                }
+
+
+                // ----------------------------------------------------
+                // Display transaction
+                // ----------------------------------------------------
+
+                transactionSection.style.display =
+                    "block";
+
+
+                const explorerUrl =
+                    "https://stellar.expert/explorer/testnet/tx/" +
+                    state.transactionHash;
+
+
+                document.getElementById(
+                    "transactionDetails"
+                ).innerHTML =
+
+                    `
+
+            <div class="blockchain-meta">
+
+                <div class="meta">
+
+                    <div class="meta-label">
+                        Transaction
+                    </div>
+
+                    <div class="meta-value">
+                        ${escapeHtml(
+                        state.transactionHash
+                    )}
+                    </div>
+
+                </div>
+
+
+                <div class="meta">
+
+                    <div class="meta-label">
+                        Verification
+                    </div>
+
+                    <div
+                        class="meta-value"
+                        style="
+                            color:
+                            ${verified.verified
+                        ? "#14804a"
+                        : "#c73838"
+                    };
+                        "
+                    >
+
+                        ${verified.verified
+                        ? "✓ VERIFIED"
+                        : "✗ MISMATCH"
+                    }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="meta-label"
+                style="margin-bottom:6px"
+            >
+                Blockchain fingerprint
+            </div>
+
+            <div class="fingerprint">
+                ${escapeHtml(
+                        verified.blockchain_fingerprint
+                    )}
+            </div>
+
+
+            <a
+                href="${explorerUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="small-btn"
+                style="
+                    display:inline-block;
+                    text-decoration:none;
+                "
+            >
+                View transaction on Stellar Expert ↗
+            </a>
+
+            `;
+
+
+                // ----------------------------------------------------
+                // Final status
+                // ----------------------------------------------------
+
+                if (
+                    verified.verified
+                ) {
+
+                    verifyStatus.className =
+                        "verify-status success";
+
+
+                    verifyStatus.textContent =
+                        "✓ Hash match — record verified";
+
+                    tamperSection.style.display =
+                        "block";
+
+                    tamperResult.style.display =
+                        "none";
+
+                    tamperResult.innerHTML =
+                        "";
+
+                    toast(
+                        "Blockchain verification successful"
+                    );
+
+
+                } else {
+
+                    verifyStatus.className =
+                        "verify-status error";
+
+
+                    verifyStatus.textContent =
+                        "✗ Hash mismatch";
+
+
+                    toast(
+                        "Blockchain verification failed"
+                    );
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                verifyStatus.className =
+                    "verify-status error";
+
+
+                verifyStatus.textContent =
+                    "✗ " +
+                    error.message;
+
+
+                toast(
+                    error.message
+                );
+
+
+            } finally {
+
+                verifyBtn.disabled =
+                    false;
+
+                verifyBtn.textContent =
+                    "🔐 Verify on Stellar";
+            }
+        }
+
+        // ============================================================
+        // TAMPER DEMONSTRATION
+        // ============================================================
+
+        tamperBtn.addEventListener(
+            "click",
+            simulateTampering
+        );
+
+
+        async function simulateTampering() {
+
+            if (
+                !state.evidenceRecord
+            ) {
+
+                toast(
+                    "No evidence record is available."
+                );
+
+                return;
+            }
+
+
+            tamperBtn.disabled =
+                true;
+
+
+            tamperBtn.innerHTML =
+                "Checking integrity...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/tamper-check",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                evidence:
+                                    state.evidenceRecord
+
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        "Tamper simulation failed."
+                    );
+                }
+
+
+                if (
+                    data.tampering_detected
+                ) {
+
+                    tamperResult.innerHTML =
+
+                        `
+                <div
+                    style="
+                        padding:18px;
+                        border-radius:15px;
+                        background:#fff0f0;
+                        border:1px solid #ffd3d3;
+                    "
+                >
+
+                    <div
+                        style="
+                            font-size:19px;
+                            font-weight:800;
+                            color:#c73838;
+                            margin-bottom:15px;
+                        "
+                    >
+                        ⚠ Tampering detected
+                    </div>
+
+
+                    <div
+                        style="
+                            font-size:12px;
+                            color:#737783;
+                            margin-bottom:5px;
+                        "
+                    >
+                        Original fingerprint
+                    </div>
+
+
+                    <div class="fingerprint">
+                        ${escapeHtml(
+                            data.original_fingerprint
+                        )}
+                    </div>
+
+
+                    <div
+                        style="
+                            font-size:12px;
+                            color:#737783;
+                            margin-bottom:5px;
+                        "
+                    >
+                        Modified fingerprint
+                    </div>
+
+
+                    <div class="fingerprint">
+                        ${escapeHtml(
+                            data.tampered_fingerprint
+                        )}
+                    </div>
+
+
+                    <div
+                        style="
+                            margin-top:12px;
+                            color:#c73838;
+                            font-weight:700;
+                            font-size:14px;
+                        "
+                    >
+                        ✗ HASH MISMATCH
+                    </div>
+
+
+                    <div
+                        style="
+                            margin-top:6px;
+                            color:#737783;
+                            font-size:12px;
+                        "
+                    >
+                        A change to the evidence produced
+                        a completely different fingerprint.
+                    </div>
+
+
+                    <button
+                        id="restoreTamperBtn"
+                        class="small-btn"
+                        style="
+                            margin-top:15px;
+                        "
+                    >
+                        ↩ Restore Original
+                    </button>
+
+                </div>
+                `;
+
+
+                    tamperResult.style.display =
+                        "block";
+
+
+                    tamperBtn.style.display =
+                        "none";
+
+
+                    document
+                        .getElementById(
+                            "restoreTamperBtn"
+                        )
+                        .addEventListener(
+                            "click",
+                            restoreOriginal
+                        );
+
+
+                    toast(
+                        "Tampering detected"
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                tamperResult.innerHTML =
+
+                    `<div
+                class="verify-status error"
+                style="display:block"
+            >
+                ✗ ${escapeHtml(
+                        error.message
+                    )}
+            </div>`;
+
+                tamperResult.style.display =
+                    "block";
+
+            } finally {
+
+                tamperBtn.disabled =
+                    false;
+
+                tamperBtn.innerHTML =
+                    "⚡ Simulate Tampering";
+            }
+        }
+
+
+        // ============================================================
+        // RESTORE
+        // ============================================================
+
+        function restoreOriginal() {
+
+            tamperResult.style.display =
+                "none";
+
+
+            tamperResult.innerHTML =
+                "";
+
+
+            tamperBtn.style.display =
+                "inline-block";
+
+
+            toast(
+                "Original evidence restored"
+            );
+        }
+
+
+    </script>
+
+</body>
+
+</html>

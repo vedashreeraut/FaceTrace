@@ -1,0 +1,93 @@
+{
+    "search_engine": "Google Lens via SerpApi",
+    "search_type": "exact_matches + visual_matches",
+    "exact_match_count": 0,
+    "visual_match_count": 7,
+    "social_result_count": 7,
+    "social_results": [
+        {
+            "platform": "Instagram",
+            "title": "Happy Birthday to Chris Hemsworth! 🎈🪓 While the world knows him best as Marvel's God of Thunder (Thor, Thor: The Dark World, The Avengers), horror fans will always hold a special place",
+            "source": "Instagram",
+            "url": "https://www.instagram.com/p/Db5DjawlL4j",
+            "thumbnail": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQEg520Y_X6XMgrxLUW9OOBLouGlyyX_5VZj4H3Hj9oeu8n3SJR",
+            "image": "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3961212975302622755",
+            "snippet": "",
+            "match_type": "Visual Match",
+            "position": 1,
+            "link_verified": true
+        },
+        {
+            "platform": "Instagram",
+            "title": "Handsome Chris Hemsworth ❤️ 💯 💯 Follow @celebrities.mirza . . . . . . #chrishemsworth #avengers #thorthedarkworld #avengersendgame #robertpattinson #ironman #captainamerica #therock #dwaynewade #henrycavill #chrisevans #Australia #sexy #handsome ...",
+            "source": "Instagram",
+            "url": "https://www.instagram.com/p/B_irHLKBhZu",
+            "thumbnail": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRIIndgxpELhFNLqQ1jJW1hqTZIVPa5RIPRVvnrf_RCfljcsoHz",
+            "image": "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=2297588365413094381",
+            "snippet": "",
+            "match_type": "Visual Match",
+            "position": 4,
+            "link_verified": true
+        },
+        {
+            "platform": "Instagram",
+            "title": "Chris Hemsworth 🥰 #ChrisHemsworth",
+            "source": "Instagram",
+            "url": "https://www.instagram.com/p/DRWzv53Drpi",
+            "thumbnail": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSejMczG0I8srlOjiXsB5kVvOn3fetAnnFMOsFcybNszsoTbvnX",
+            "image": "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3922503389904211212",
+            "snippet": "",
+            "match_type": "Visual Match",
+            "position": 6,
+            "link_verified": true
+        },
+        {
+            "platform": "Instagram",
+            "title": "Shaved my beard for Spring, feeling like a super hero!!! This isn't a picture of me, just some guy who plays Thor. Happy Easter.",
+            "source": "Instagram",
+            "url": "https://www.instagram.com/p/DWv7_D9DtdF",
+            "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYkYmPEmKQgBoBYJpniQSq9NHjSLOPblgM7YVENokeo9HoSk_c",
+            "image": "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3961063964801079721",
+            "snippet": "",
+            "match_type": "Visual Match",
+            "position": 25,
+            "link_verified": true
+        },
+        {
+            "platform": "Instagram",
+            "title": "Chris Hemsworth Relationship Elsa Pataky",
+            "source": "Instagram",
+            "url": "https://www.instagram.com/popular/chris-hemsworth-relationship-elsa-pataky",
+            "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3Oh1Mc7OU6rTKKR38rXQj9evwMn64RdBK55odXAh4e-We1KCa",
+            "image": "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3374416880766155874",
+            "snippet": "",
+            "match_type": "Visual Match",
+            "position": 36,
+            "link_verified": true
+        },
+        {
+            "platform": "Facebook",
+            "title": "Chris Hemsworth is a 42-year-old actor and film producer originating from Melbourne, Victoria, Australia. His approximate net worth is listed at $130 million, and he is noted as having three children. According",
+            "source": "Facebook",
+            "url": "https://www.facebook.com/100083642913007/posts/chris-hemsworth-is-a-42-year-old-actor-and-film-producer-originating-from-melbou/959801146817974",
+            "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk_Gq2IUQOhQBubDau7PL1eDiyZ1pY6QnDm_4dBcbMOKtR-vIU",
+            "image": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=1174859703013221",
+            "snippet": "",
+            "match_type": "Visual Match",
+            "position": 2,
+            "link_verified": null
+        },
+        {
+            "platform": "Facebook",
+            "title": "He's tall, he's handsome, he's funny and he's one of the best! You get to watch him before anyone else in the World Television Premiere of Men In Black: International on Oct",
+            "source": "Facebook",
+            "url": "https://www.facebook.com/AndFlixHD/posts/hes-tall-hes-handsome-hes-funny-and-hes-one-of-the-best-you-get-to-watch-him-bef/712126269273841",
+            "thumbnail": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQJyt0qjPTsmuKWpT-FNx8yI1SOeVUvcEXK51jxwb-QLZIWAB25",
+            "image": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=2791282380898164",
+            "snippet": "",
+            "match_type": "Visual Match",
+            "position": 39,
+            "link_verified": null
+        }
+    ]
+}
