@@ -19,15 +19,15 @@
             --pollen-glow: #ffd56b;
             --emerald-bright: #38ef7d;
             --teal-bright: #11998e;
-            
+
             --glass-surface: rgba(20, 38, 27, 0.55);
             --glass-card: rgba(255, 255, 255, 0.08);
             --glass-border: rgba(255, 255, 255, 0.18);
             --glass-hover: rgba(255, 255, 255, 0.25);
-            
+
             --text-main: #f0f7f2;
             --text-muted: #a3c2ab;
-            
+
             --accent: #38ef7d;
             --accent-glow: rgba(56, 239, 125, 0.4);
             --teal: #00f2fe;
@@ -124,12 +124,21 @@
         }
 
         @keyframes orbFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(60px, -40px) scale(1.1); }
-            100% { transform: translate(-40px, 50px) scale(0.9); }
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(60px, -40px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-40px, 50px) scale(0.9);
+            }
         }
 
-        button, input {
+        button,
+        input {
             font: inherit;
         }
 
@@ -186,8 +195,13 @@
         }
 
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 20px rgba(56, 239, 125, 0.3); }
-            100% { box-shadow: 0 0 40px rgba(0, 242, 254, 0.6); }
+            0% {
+                box-shadow: 0 0 20px rgba(56, 239, 125, 0.3);
+            }
+
+            100% {
+                box-shadow: 0 0 40px rgba(0, 242, 254, 0.6);
+            }
         }
 
         .brand-name {
@@ -238,8 +252,15 @@
         }
 
         @keyframes blink {
-            from { opacity: 0.3; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1.2); }
+            from {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1.2);
+            }
         }
 
         /* =====================================================
@@ -646,6 +667,29 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
+        }
+
+        .result-card>div:nth-child(2) {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .result-actions {
+            flex-shrink: 0;
+            min-width: max-content;
+        }
+
+        .result-url {
+            margin-top: 6px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-family: monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+            max-width: 100%;
+            display: block;
         }
 
         .result-card:hover {
@@ -1100,7 +1144,9 @@
            ===================================================== */
 
         @media (max-width: 900px) {
-            .upload-layout, .evidence-layout {
+
+            .upload-layout,
+            .evidence-layout {
                 grid-template-columns: 1fr;
             }
 
@@ -1136,13 +1182,42 @@
                 height: 75px;
             }
 
+            .result-card {
+                overflow: hidden;
+            }
+
+            .result-card-content,
+            .result-content {
+                min-width: 0;
+            }
+
+            .result-info {
+                min-width: 0;
+                flex: 1;
+            }
+
+            .result-url {
+                min-width: 0;
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: block;
+            }
+
+            .result-actions {
+                flex-shrink: 0;
+            }
+
             .result-actions {
                 grid-column: 1 / -1;
                 flex-direction: row;
                 justify-content: flex-end;
             }
 
-            .blockchain-top, .verify-row, .transaction-grid {
+            .blockchain-top,
+            .verify-row,
+            .transaction-grid {
                 flex-direction: column;
                 align-items: stretch;
                 grid-template-columns: 1fr;
@@ -1186,7 +1261,8 @@
         <section class="hero">
             <div class="eyebrow">Visual Evidence Intelligence Platform</div>
             <h1>Find where a face <span>appears online.</span></h1>
-            <p>Search the web for matching visual content, identify relevant social-media evidence, and anchor the discovered record to Stellar for cryptographic verification.</p>
+            <p>Search the web for matching visual content, identify relevant social-media evidence, and anchor the
+                discovered record to Stellar for cryptographic verification.</p>
         </section>
 
         <!-- PIPELINE -->
@@ -1343,15 +1419,18 @@
                 </div>
 
                 <div class="tamper-card">
-                    <p class="tamper-copy">Simulate a small change to the discovered evidence. FaceTrace recomputes its fingerprint and demonstrates why the modified record no longer matches the original fingerprint.</p>
+                    <p class="tamper-copy">Simulate a small change to the discovered evidence. FaceTrace recomputes its
+                        fingerprint and demonstrates why the modified record no longer matches the original fingerprint.
+                    </p>
                     <button id="tamperBtn" class="small-button">⚡ Simulate Tampering</button>
                     <div id="tamperResult" class="tamper-result"></div>
                 </div>
             </section>
 
         </main>
-        
-        <footer style="text-align:center; padding:40px 0 0; color:var(--text-muted); font-size:12px; letter-spacing:.5px;">
+
+        <footer
+            style="text-align:center; padding:40px 0 0; color:var(--text-muted); font-size:12px; letter-spacing:.5px;">
             FaceTrace · Visual evidence discovery · Stellar Testnet
         </footer>
     </div>
@@ -1398,7 +1477,7 @@
                 this.size = Math.random() * 3 + 1.5;
                 this.baseX = this.x;
                 this.baseY = this.y;
-                
+
                 if (isBurst) {
                     this.speedX = (Math.random() - 0.5) * 6;
                     this.speedY = (Math.random() - 0.5) * 6;
@@ -1412,7 +1491,7 @@
 
                 this.opacity = Math.random() * 0.6 + 0.3;
                 this.pulseSpeed = Math.random() * 0.03 + 0.01;
-                
+
                 const colors = ['56, 239, 125', '0, 242, 254', '255, 213, 107', '194, 222, 201'];
                 this.color = colors[Math.floor(Math.random() * colors.length)];
             }
@@ -1445,7 +1524,7 @@
                     let dx = mouse.x - this.x;
                     let dy = mouse.y - this.y;
                     let distance = Math.sqrt(dx * dx + dy * dy);
-                    
+
                     if (distance < mouse.radius) {
                         let forceDirectionX = dx / distance;
                         let forceDirectionY = dy / distance;
@@ -1790,18 +1869,21 @@
                 `;
 
                 card.addEventListener("click", event => {
-                    if (event.target.dataset.action) return;
-                    selectResult(originalIndex);
+                    if (event.target.closest("[data-action]")) return;
+                    selectResult(originalIndex, false);
                 });
 
                 card.querySelector('[data-action="view"]').addEventListener("click", event => {
                     event.stopPropagation();
-                    if (result.url) window.open(result.url, "_blank", "noopener,noreferrer");
+
+                    if (result.url) {
+                        window.open(result.url, "_blank", "noopener,noreferrer");
+                    }
                 });
 
                 card.querySelector('[data-action="verify"]').addEventListener("click", event => {
                     event.stopPropagation();
-                    selectResult(originalIndex);
+                    selectResult(originalIndex, true);
                 });
 
                 resultsList.appendChild(card);
@@ -1811,7 +1893,7 @@
         // ============================================================
         // SELECT RESULT
         // ============================================================
-        async function selectResult(index) {
+        async function selectResult(index, goToBlockchain = false) {
             state.selectedResult = state.results[index];
             renderResults();
 
@@ -1825,9 +1907,16 @@
 
             const canonicalJson = JSON.stringify(record);
             const encoder = new TextEncoder();
-            const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(canonicalJson));
+            const hashBuffer = await crypto.subtle.digest(
+                "SHA-256",
+                encoder.encode(canonicalJson)
+            );
+
             const hashArray = Array.from(new Uint8Array(hashBuffer));
-            state.fingerprint = hashArray.map(byte => byte.toString(16).padStart(2, "0")).join("");
+
+            state.fingerprint = hashArray
+                .map(byte => byte.toString(16).padStart(2, "0"))
+                .join("");
 
             const evidence = state.selectedResult;
             const matchType = evidence.match_type || "Related Match";
@@ -1842,14 +1931,23 @@
                 limitations: evidence.limitations || []
             };
 
+            // ============================================================
+            // EVIDENCE INTELLIGENCE
+            // ============================================================
+
             evidenceSection.style.display = "block";
+
             document.getElementById("matchBadge").textContent = matchType;
             document.getElementById("scoreDisplay").textContent = `${score} / 100`;
-            document.getElementById("scoreLabel").textContent = `${level} confidence index`;
+            document.getElementById("scoreLabel").textContent =
+                `${level} confidence index`;
+
             document.getElementById("scoreFill").style.width = `${score}%`;
 
             const whyList = document.getElementById("whyList");
-            whyList.innerHTML = `<div class="reason"><strong>Intelligence Analysis</strong></div>`;
+
+            whyList.innerHTML =
+                `<div class="reason"><strong>Intelligence Analysis</strong></div>`;
 
             state.evidence.why.forEach(reason => {
                 const item = document.createElement("div");
@@ -1859,28 +1957,62 @@
             });
 
             const limitationsBox = document.getElementById("limitationsBox");
+
             if (state.evidence.limitations.length) {
                 limitationsBox.style.display = "block";
-                limitationsBox.innerHTML = "<strong>Notice:</strong><br>" + state.evidence.limitations.map(item => `• ${item}`).join("<br>");
+
+                limitationsBox.innerHTML =
+                    "<strong>Notice:</strong><br>" +
+                    state.evidence.limitations
+                        .map(item => `• ${item}`)
+                        .join("<br>");
             } else {
                 limitationsBox.style.display = "none";
             }
 
+            // ============================================================
+            // BLOCKCHAIN PREPARATION
+            // ============================================================
+
             blockchainSection.style.display = "block";
+
             document.getElementById("selectedSummary").innerHTML = `
-                <div class="selected-label">Target Evidence Selected</div>
-                <div class="selected-title">${escapeHtml(state.selectedResult.title)}</div>
-                <div style="color:var(--text-muted); font-size:12px; margin-top:4px;">${escapeHtml(state.selectedResult.platform || "Social Media")}</div>
-            `;
+        <div class="selected-label">Target Evidence Selected</div>
+        <div class="selected-title">
+            ${escapeHtml(state.selectedResult.title)}
+        </div>
+        <div style="color:var(--text-muted); font-size:12px; margin-top:4px;">
+            ${escapeHtml(state.selectedResult.platform || "Social Media")}
+        </div>
+    `;
 
             fingerprintElement.textContent = state.fingerprint;
+
             verifyStatus.className = "verify-status";
             verifyStatus.textContent = "";
             verifyBtn.disabled = false;
 
-            setStep(4);
-            toast("Evidence target selected");
-            blockchainSection.scrollIntoView({ behavior: "smooth" });
+            // ============================================================
+            // NAVIGATION
+            // ============================================================
+
+            if (goToBlockchain) {
+                setStep(4);
+                toast("Opening blockchain verification");
+
+                blockchainSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            } else {
+                setStep(3);
+                toast("Evidence target selected");
+
+                evidenceSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
         }
 
         // ============================================================
